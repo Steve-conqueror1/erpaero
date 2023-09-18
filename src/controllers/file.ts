@@ -57,3 +57,22 @@ const {id} = req.params
 }
 
 
+export const getFile =  async (req: Request, res: Response, next: NextFunction) => {
+  const {id} = req.params
+  if(!id){
+    throw createHttpError(422, "Id is required")
+  }
+    try {
+      const file = await fileRepository.findOne({where: {id: Number(id)}})
+
+      if(!file){
+         throw createHttpError(404, "No such file was found")
+      }
+
+      res.status(200).json(file)
+    }catch (error) {
+      next(error)
+    }
+
+}
+
