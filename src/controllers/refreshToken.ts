@@ -18,7 +18,7 @@ export const refreshToken = async (req: Request, res: Response, next: NextFuncti
     );
 
     res.header('Authorization', accessToken);
-    res.status(200).json({ email: (decoded as any).email, id: (decoded as any).id });
+    res.status(200).json({ email: (decoded as any).email, id: (decoded as any).id, token: accessToken });
   } catch (err) {
     next(err);
   }
