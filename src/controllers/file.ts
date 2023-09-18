@@ -9,6 +9,8 @@ import { promisify }  from 'util'
 const unlinkAsync = promisify(fs.unlink)
 const fileRepository = AppDataSource.getRepository(File);
 
+ const filesPath = `${process.cwd()}/uploads`;
+
 export const uploadFile = async (req: Request, res: Response, next: NextFunction) => {
   const body = req.body;
 
@@ -40,7 +42,7 @@ const {id} = req.params
 
     if(file){
         await  fileRepository.remove(file)
-       const filesPath = `${process.cwd()}/uploads`;
+
       await unlinkAsync(`${filesPath}/${file.name}`)
       res.status(200).json({message: "File deleted successfully"})
     }else{
@@ -73,6 +75,30 @@ export const getFile =  async (req: Request, res: Response, next: NextFunction) 
     }catch (error) {
       next(error)
     }
+
+}
+
+export const downloadFile =  async (req: Request, res: Response, next: NextFunction) => {
+   const { id:fileName } = req.params;
+
+
+
+  try {
+    if (!fileName) {
+      throw createHttpError(422, 'Filename is required');
+    }
+
+    const filePath = `${filesPath}/${fileName}`;
+    res.status(200).download(filePath, (err) => {
+      if (err) {
+        let newError = err;
+        newError.message = 'Нет такого файла';
+        next(newError);
+      }
+    });
+  } catch (e) {
+    next(e);
+  }
 
 }
 
