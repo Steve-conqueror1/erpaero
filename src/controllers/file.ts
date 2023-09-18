@@ -120,3 +120,15 @@ export const updateFile = async (req: Request, res: Response, next: NextFunction
     next(error);
   }
 };
+
+export const getFiles = async (req: Request, res: Response, next: NextFunction) => {
+  const {list_size, page} = req.query
+  try {
+
+    const files = await fileRepository.find({take: Number(list_size) || 10, skip: Number(page) || 1})
+
+    res.status(200).json(files)
+  }catch (error) {
+    next(error)
+  }
+}
