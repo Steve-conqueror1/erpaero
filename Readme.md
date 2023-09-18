@@ -1,7 +1,18 @@
-1. Create migrations
+## 1. Run redis
+`redis-server`
 
-## npm run migrate:generate --name=migration_name
+## 2.  Commands
+##  Create migrations
 
-2. Apply migrations
+ `npm run migrate:generate --name=migration_name`
 
-## npm run migrate:run
+##  Apply migrations
+
+`npm run migrate:run`
+
+## 3. Run mysql database
+`docker-compose uup -d`
+
+## 4 run project
+
+`npm run dev`
