@@ -4,13 +4,12 @@ import dotenv from 'dotenv';
 import 'reflect-metadata';
 import cors from 'cors';
 import createHttpError, { isHttpError } from 'http-errors';
-const cookieParser  = require("cookie-parser")
-
+const cookieParser = require('cookie-parser');
 
 import { AppDataSource } from '../data-source';
-import { authRoutes, userRoutes } from './routes';
+import { authRoutes, fileRoutes, userRoutes } from './routes';
 import { checkAuth } from './middleware';
-import {redisClient} from "./utils/redisCli";
+import { redisClient } from './utils/redisCli';
 
 const app: Express = express();
 dotenv.config();
@@ -18,12 +17,14 @@ app.use(cors());
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser())
-
+app.use(cookieParser());
 
 app.use('/api/auth', authRoutes);
+
 app.use(checkAuth);
+
 app.use('/api/info', userRoutes);
+app.use('/api/file', fileRoutes);
 
 const PORT = process.env.PORT || 5000;
 
@@ -40,21 +41,17 @@ app.use((error: unknown, req: Request, res: Response, next: NextFunction) => {
     errorMessage = error.message;
   }
 
-
-
   return res.status(statusCode).json({
     message: errorMessage,
   });
 });
-
-
 
 AppDataSource.initialize()
   .then(() => {
     app.listen(PORT, () => {
       console.log(`Listening to port ${PORT} `);
     });
-    redisClient.connect()
+    redisClient.connect();
   })
   .catch((error: Error) => {
     console.log(error.message);
